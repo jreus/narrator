@@ -11,6 +11,10 @@ s.options.numDigitalChannels = 16;
 s.options.blockSize = 16;
 s.options.numInputBusChannels = 10;
 s.options.numOutputBusChannels = 4;
+s.options.maxLogins = 5;
+s.options.memSize = 8192 * 32; // the default is 8192 which is quite little
+
+
 
 // project directory
 ~mypath = "".resolveRelative;
@@ -31,7 +35,7 @@ s.waitForBoot({
 	(~mypath +/+ "run.scd").load;
 	s.sync;
 	"...Done!".postln;
-	
-	
-	
+
+
+
 });
