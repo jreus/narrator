@@ -39,10 +39,9 @@ PathName(a.clientProjectPath +/+ "_samples/_fragments/").filesDo {|filepath|
 
 
 // Try with playbuf
-z = Synth(\playFragment, [\out, 0, \buf, a.fragmentBufs[0], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+d = Synth(\playFragment, [\out, 2, \buf, a.fragmentBufs[3], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+e = Synth(\playFragment, [\out, 3, \buf, a.fragmentBufs[4], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
 
-
-().play
 
 
 
