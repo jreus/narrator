@@ -1,14 +1,30 @@
 /***** init.scd *****/
 
-a.fragmentBufs = ();
-a.sampleDir = a.projectPath +/+ "_samples/";
-a.fragmentDir = a.sampleDir +/+ "_fragments/";
+/* !!NOTE:
+
+Using Buffer.cueSoundFile and DiskIn isn't a great idea. The repeated Disk reads causes mode switches and underruns. Better to use PlayBuf, if this becomes a RAM issue then use DiskIn with a large buffer size.
+
+SynthDef(\playCueBuf,{|out=0, buf|
+  // NOTE: DiskIn causes mode switches and underruns due to disk reads, better to use PlayBuf!
+    Out.ar(out, DiskIn.ar( 1, buf ))
+}).add;
+
+
+*/
+
+
+
+a.fragmentBufs = List.new;
 
 ( // Load Samples
-PathName(a.fragmentDir).filesDo {|filepath|
-  var bufsize = 65536 * 4; // adjust for available ram vs. playback quality
-  Buffer.cueSoundFile(s, filepath, 0, 1, 65536 * 4);
+
+// Fragment buffers
+a.fragmentPaths.do {|pathStr|
+  a.fragmentBufs.add(
+    Buffer.read(s, pathStr, 0, -1, {|buf| "LOADED %".format(buf).postln })
+  );
 };
+
 );
 
-x = PathName(a.clientProjectPath +/+ "_samples/_fragments");
+

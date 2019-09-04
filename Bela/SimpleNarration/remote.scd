@@ -20,13 +20,32 @@ s.initTree;
 s.startAliveThread;
 
 a = ();
-// Bela project path
-a.projectPath = "/root/Bela/projects/SimpleNarration/";
+a.belaProjectPath = "/root/Bela/projects/SimpleNarration/";
 a.clientProjectPath = "".resolveRelative;
+
+// build a client-side copy of fragment paths using local filesystem
+a.fragmentPaths = List.new;
+
+PathName(a.clientProjectPath +/+ "_samples/_fragments/").filesDo {|filepath|
+  a.fragmentPaths.add(a.belaProjectPath +/+ "_samples/_fragments/" +/+ filepath.fileName);
+};
+
 );
+
 (a.clientProjectPath +/+ "loadSynthdefs.scd").load;
 (a.clientProjectPath +/+ "init.scd").load;
 (a.clientProjectPath +/+ "run.scd").load;
+
+
+
+// Try with playbuf
+z = Synth(\playFragment, [\out, 0, \buf, a.fragmentBufs[0], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+
+
+().play
+
+
+
 
 
 
