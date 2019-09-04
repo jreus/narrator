@@ -7,24 +7,29 @@ First run _main.scd on the Bela
 
 ******/
 
+// Test active communication with the server
+s.plotTree; // show all active nodes
+s.freeAll;  // free all nodes
 
-( // connect to the already-running remote belaserver
+
+// Run these one at a time..
+(
 Server.default = s = Server("belaServer", NetAddr("192.168.7.2", 57110));
 s.options.maxLogins = 10; // should match the settings on the Bela
 s.initTree;
 s.startAliveThread;
-);
 
-// Communicate with the server
-s.plotTree; // show all active nodes
-s.freeAll;  // free all nodes
-
-(
 a = ();
-
-
-
+// Bela project path
+a.projectPath = "/root/Bela/projects/SimpleNarration/";
+a.clientProjectPath = "".resolveRelative;
 );
+(a.clientProjectPath +/+ "loadSynthdefs.scd").load;
+(a.clientProjectPath +/+ "init.scd").load;
+(a.clientProjectPath +/+ "run.scd").load;
+
+
+
 
 
 

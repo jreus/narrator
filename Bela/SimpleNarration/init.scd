@@ -10,3 +10,5 @@ PathName(a.fragmentDir).filesDo {|filepath|
   Buffer.cueSoundFile(s, filepath, 0, 1, 65536 * 4);
 };
 );
+
+x = PathName(a.clientProjectPath +/+ "_samples/_fragments");
