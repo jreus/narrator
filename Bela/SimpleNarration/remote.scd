@@ -20,6 +20,15 @@ s.plotTree; // show all active nodes
 s.freeAll;  // free all nodes
 
 (
+a = ();
+
+
+
+);
+
+
+
+(
 SynthDef('karp', {|freq=200, amp=0.5, pan=0, dur=1, trig=1, delaytime=2, decaytime=2, coef=0.1, out=0|
 		var sig, env;
 	coef.poll(2);

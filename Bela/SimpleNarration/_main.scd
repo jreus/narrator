@@ -23,25 +23,34 @@ s.options.speakerMuted = 0;    // Set whether to mute the speaker initially (def
 // NOTE:: REMEMBER TO ALWAYS REDUCE THE LEVEL GOING TO THE SPEAKER AMPS! THEY EXPECT 1.8V peak2peak
 //   Add a resistor/divider if needed from the audio output!
 
-// project directory
-~mypath = "".resolveRelative;
+a = ();
+a.projectPath = "".resolveRelative;
+a.projectPath.postln;
 
 s.waitForBoot({
+  "Loading settings...".postln; // settings file is ignored by git
+  (a.projectPath +/+ "localSettings.scd").load;
+
+  // If controlling remotely, these load statements must be run
+  // from the remote client IDE: see remote.scd
+  if(a.remote.isNil.or {a.remote == false}) {
 
 	"Loading Synthdefs...".postln;
-	(~mypath +/+ "loadSynthdefs.scd").load;
+	(a.projectPath +/+ "loadSynthdefs.scd").load;
 	s.sync;
 	"Finished!".postln;
 
 	"Initialize data structures, load buffers, make busses, synth instances, etc...".postln;
-	(~mypath +/+ "init.scd").load;
+	(a.projectPath +/+ "init.scd").load;
 	s.sync;
 	"Finished!".postln;
 
 	"Start app...".postln;
-	(~mypath +/+ "run.scd").load;
+	(a.projectPath +/+ "run.scd").load;
 	s.sync;
 	"...Done!".postln;
+
+  };
 
 
 
