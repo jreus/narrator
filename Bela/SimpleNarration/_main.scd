@@ -50,6 +50,8 @@ s.waitForBoot({
 	s.sync;
 	"...Done!".postln;
 
+  } {
+  	"Running system in REMOTE mode... waiting for remote client to connect and send commands.".postln;
   };
 
 
