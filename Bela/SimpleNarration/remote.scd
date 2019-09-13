@@ -2,7 +2,9 @@
 Bela Remote Control
 
 Use this file for working on the Bela remotely from the SC IDE.
-First run _main.scd on the Bela
+First run _main.scd on the Bela and edit localSettings.scd to configure
+remote mode to be true.
+
 (c) 2019 Jonathan Reus
 
 ******/
@@ -11,57 +13,54 @@ First run _main.scd on the Bela
 s.plotTree; // show all active nodes
 s.freeAll;  // free all nodes
 
-
-// Run these one at a time..
-(
+( // Connect to the Bela server and set up Client Side data structures
 Server.default = s = Server("belaServer", NetAddr("192.168.7.2", 57110));
 s.options.maxLogins = 10; // should match the settings on the Bela
 s.initTree;
 s.startAliveThread;
 
+(
 a = ();
-a.belaProjectPath = "/root/Bela/projects/SimpleNarration/";
-a.clientProjectPath = "".resolveRelative;
 
-// build a client-side copy of fragment paths using local filesystem
-a.fragmentPaths = List.new;
+a.belaRootPath = "/root/Bela/projects/SimpleNarration/";
+a.clientRootPath = "".resolveRelative;
 
-PathName(a.clientProjectPath +/+ "_samples/_fragments/").filesDo {|filepath|
-  a.fragmentPaths.add(a.belaProjectPath +/+ "_samples/_fragments/" +/+ filepath.fileName);
+a.rootPath = "".resolveRelative;
+a.dataPath = a.belaRootPath +/+ "stories/";
+a.audioPath = a.dataPath +/+ "audiofiles/";
+
+a.clientDataPath = a.clientRootPath +/+ "stories/";
+a.clientAudioPath = a.clientDataPath +/+ "audiofiles/";
+
+// build a client-side copy of Bela-side audio paths
+a.audioFilePaths = List.new;
+PathName(a.clientAudioPath).filesDo {|filepath|
+  a.audioFilePaths.add(a.audioPath +/+ filepath.fileName);
 };
 
+a.audioBufs;
+
+a.rootPath.postln;
 );
 
+// These should now target the Bela and the audio files in its filesystem
 (a.clientProjectPath +/+ "loadSynthdefs.scd").load;
-(a.clientProjectPath +/+ "init.scd").load;
-(a.clientProjectPath +/+ "run.scd").load;
+(a.clientProjectPath +/+ "loadUtils.scd").load;
+(a.clientProjectPath +/+ "loadAudioFiles.scd").load;
+
+(a.clientProjectPath +/+ "playStories.scd").load;
 
 
 
-// Try with playbuf
-d = Synth(\playFragment, [\out, 2, \buf, a.fragmentBufs[3], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
-e = Synth(\playFragment, [\out, 3, \buf, a.fragmentBufs[4], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+// Livecoding some things...
+d = Synth(\playFragment, [\out, 0, \buf, a.fragmentBufs[3], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+e = Synth(\playFragment, [\out, 1, \buf, a.fragmentBufs[4], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
 
+// into a haptic transducer...
+f = Synth(\playFragment, [\out, 2, \buf, a.fragmentBufs[5], \fadeIn, 2, \fadeOut, 2, \amp, 1.0]);
+f.free;
 
-
-
-
-
-
-
-
-
-(
-SynthDef('karp', {|freq=200, amp=0.5, pan=0, dur=1, trig=1, delaytime=2, decaytime=2, coef=0.1, out=0|
-		var sig, env;
-	coef.poll(2);
-		sig = Pluck.ar(WhiteNoise.ar(1), trig, delaytime, freq.reciprocal, decaytime, coef);
-		env = EnvGen.ar(Env.perc(0.01, dur), trig, doneAction: 2);
-		Out.ar(out, sig * env * amp);
-}).add;
-);
-
-Synth('karp', [\out, 0, 'dur', 20, 'freq', 220, 'amp', 1.0, 'decaytime', 0.5, 'coef', 0.1]);
+Synth('karp', [\out, 0, 'dur', 20, 'freq', 5, 'amp', 0.5, 'decaytime', 0.5, 'coef', 0.1]);
 Synth('karp', [\out, 1, 'dur', 20, 'freq', 10, 'amp', 1.0, 'decaytime', 10.5, 'coef', 0.7, \delaytime, 0.6]);
 
 // Don't overload the speaker amps!!!! Watch the amplitude... :-/ ....
@@ -69,15 +68,16 @@ Synth('karp', [\out, 1, 'dur', 20, 'freq', 10, 'amp', 1.0, 'decaytime', 10.5, 'c
 // centered around 2.5V ....
 // x = {SinOsc.ar(100) * 1.0}.play(outbus: 2);
 
-
 // An amplitude of 0.35 gives you roughly 1.8 V peak2peak
 // ...but you lose some resolution... :-/
 //x = {SinOsc.ar(100) * 0.32}.play(outbus: 2);
 //x.free;
 
 // A 47k resistor in series from AN0 does a good job of bringing down the signal! :-)
-x = {SinOsc.ar(100) * SinOsc.ar(1)}.play(outbus: 2);
-x.free;
+
+// Haptic Pulses
+x = Synth(\simpleHaptic, [\out, 2, \atk, 0.01, \dur, 4, \rel, 2]);
+y = Synth(\simpleHaptic, [\out, 3, \freq, 200, \am_hz, 5, \atk, 0.01, \dur, 2, \rel, 1]);
 
 
 

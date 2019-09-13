@@ -1,0 +1,12 @@
+# A story about an island and
+# an estuary.
+
+passage estuary
+0.0 play haven1.wav out=0 fadein=2.5 fadeout=1.0
+0.1 haptic freq=100 amod=2 dur=2.0 fadein=1.0 fadeout=1.0
+whendone goto island
+
+passage island
+0.0 play beach1.wav out=1 fadein=2.5 fadeout=1.0
+1.0 haptic freq=100 amod=1 dur=1.0 fadein=0.2 fadeout=0.2
+whendone goto estuary

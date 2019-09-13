@@ -23,32 +23,47 @@ s.options.speakerMuted = 0;    // Set whether to mute the speaker initially (def
 // NOTE:: REMEMBER TO ALWAYS REDUCE THE LEVEL GOING TO THE SPEAKER AMPS! THEY EXPECT 1.8V peak2peak
 //   Add a resistor/divider if needed from the audio output!
 
+
+(
 a = ();
-a.projectPath = "".resolveRelative;
-a.projectPath.postln;
+
+a.rootPath = "".resolveRelative;
+a.dataPath = a.rootPath +/+ "stories/";
+a.audioPath = a.dataPath +/+ "audiofiles/";
+
+a.audioBufs;
+
+a.rootPath.postln;
+);
+
 
 s.waitForBoot({
+
   "Loading settings...".postln; // settings file is ignored by git
   (a.projectPath +/+ "localSettings.scd").load;
 
-  // If controlling remotely, these load statements must be run
+  // If controlling remotely, the following load statements must be run
   // from the remote client IDE: see remote.scd
   if(a.remote.isNil.or {a.remote == false}) {
 
-	"Loading Synthdefs...".postln;
-	(a.projectPath +/+ "loadSynthdefs.scd").load;
-	s.sync;
-	"Finished!".postln;
+    "Loading Synthdefs...".postln;
+    (a.rootPath +/+ "loadSynthdefs.scd").load;
+    s.sync;
+    "Finished!".postln;
 
-	"Initialize data structures, load buffers, make busses, synth instances, etc...".postln;
-	(a.projectPath +/+ "init.scd").load;
-	s.sync;
-	"Finished!".postln;
+    // load utility methods & data structures
+    (a.rootPath +/+ "loadUtils.scd").load;
 
-	"Start app...".postln;
-	(a.projectPath +/+ "run.scd").load;
-	s.sync;
-	"...Done!".postln;
+    // load & parse story files from project directory
+    //(a.selfPath +/+ "parseStory.scd").load;
+
+    (a.rootPath +/+ "loadAudioFiles.scd").load;
+    s.sync;
+
+
+    (a.projectPath +/+ "playStories.scd").load;
+    s.sync;
+
 
   } {
   	"Running system in REMOTE mode... waiting for remote client to connect and send commands.".postln;
