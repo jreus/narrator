@@ -17,37 +17,14 @@ PathName(a.audioPath).filesDo {|filepath|
 
   // Load into buffers...
   if(filepath.extension == "wav") {
+  	"Load %".format(filepath).postln;
   a.audioBufs.put(filepath.fileName,
-    Buffer.read(s, filepath.fullPath, 0, -1, {|buf| "% %sps %ch".format(PathName(buf.path).fileName, buf.sampleRate, buf.numChannels).postln })
+    //Buffer.read(s, filepath.fullPath, 0, -1, {|buf| "% %sps %ch".format(PathName(buf.path).fileName, buf.sampleRate, buf.numChannels).postln })
+    Buffer.read(s, filepath.fullPath, 0, -1);
   );
 
   };
 }
 
 
-/*
-/***** init.scd *****/
-
-
-
-
-
-a.fragmentBufs = List.new;
-
-( // Load Samples
-
-// Fragment buffers
-a.fragmentPaths.do {|pathStr|
-  a.fragmentBufs.add(
-    Buffer.read(s, pathStr, 0, -1, {|buf| "LOADED %".format(buf).postln })
-  );
-};
-
-);
-
-
-
-
-
-*/
 
